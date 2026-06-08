@@ -1,0 +1,354 @@
+<!DOCTYPE html >
+<html >
+<head>
+    <meta charset="UTF-8">
+    <title>Operations List</title>
+    <link rel="stylesheet" th:href="@{/style.css}">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <script src="scripts.js"></script>
+
+</head>
+<body>
+    
+
+    <main>
+        <section>
+            <h2>Available Operations</h2>                  
+
+            <table id="operationsTable" >
+                <thead>
+                    <div style="display: inline-flex; gap: 350px;" >
+ <!-- Buttons to open modals directly with margin -->
+<div class="d-flex justify-content-between mb-3">
+    <!-- Income Button -->
+    <button type="button" class="btn btn-primary me-2" data-bs-toggle="modal" data-bs-target="#incomeModal">
+        <i class="fas fa-coins"></i> Income
+    </button>
+
+    <!-- Expense Button -->
+    <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#expenseModal">
+        <i class="fas fa-shopping-cart"></i> Expense
+    </button>
+        
+
+                        
+  <!-- Logout Form with Icon and Text -->
+<form th:action="@{/wallet/login}" method="get" style="display:inline;">
+    <button type="submit" class="btn btn-danger" style="margin-bottom: 20px; margin-left: 800px;">
+        <i class="fas fa-sign-out-alt"></i> Logout <!-- Icon with Text -->
+    </button>
+</form>
+ <!-- Filter Button -->
+<button type="button" class="btn btn-info" id="filterButton">
+    <i class="fas fa-filter"></i> Filter
+</button>
+<!-- Filter Modal -->
+<div class="modal fade" id="filterModal" tabindex="-1" aria-labelledby="filterModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="filterModalLabel">Filter Options</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="filterForm">
+                    <!-- Column Checkboxes -->
+                    <div class="mb-3">
+                        <label class="form-label">Columns to Filter:</label>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="filterOperationId" checked>
+                            <label class="form-check-label" for="filterOperationId">Operation ID</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="filterOperationType" checked>
+                            <label class="form-check-label" for="filterOperationType">Operation Type</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="filterCategory" checked>
+                            <label class="form-check-label" for="filterCategory">Category</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="filterAmount" checked>
+                            <label class="form-check-label" for="filterAmount">Amount TND</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="filterCreatedAt" checked>
+                            <label class="form-check-label" for="filterCreatedAt">Created At</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="filterUpdatedAt" checked>
+                            <label class="form-check-label" for="filterUpdatedAt">Updated At</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="filterAmountSigned" checked>
+                            <label class="form-check-label" for="filterAmountSigned">Amount Signed</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="filterAmountCredit" checked>
+                            <label class="form-check-label" for="filterAmountCredit">Amount Credit</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="filterAmountDebit" checked>
+                            <label class="form-check-label" for="filterAmountDebit">Amount Debit</label>
+                        </div>
+                    </div>
+                    <!-- Filter Value -->
+                    <div class="mb-3">
+                        <label for="filterValue" class="form-label">Filter Value:</label>
+                        <input type="text" id="filterValue" class="form-control">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="applyFilterButton">Apply Filters</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const table = document.getElementById('operationsTable');
+        const rows = table.querySelectorAll('tbody tr');
+
+        function applyFilters() {
+            const filterValue = document.getElementById('filterValue').value.toLowerCase();
+            const filterOperationId = document.getElementById('filterOperationId').checked;
+            const filterOperationType = document.getElementById('filterOperationType').checked;
+            const filterCategory = document.getElementById('filterCategory').checked;
+            const filterAmount = document.getElementById('filterAmount').checked;
+            const filterCreatedAt = document.getElementById('filterCreatedAt').checked;
+            const filterUpdatedAt = document.getElementById('filterUpdatedAt').checked;
+            const filterAmountSigned = document.getElementById('filterAmountSigned').checked;
+            const filterAmountCredit = document.getElementById('filterAmountCredit').checked;
+            const filterAmountDebit = document.getElementById('filterAmountDebit').checked;
+
+            rows.forEach(row => {
+                const cells = row.getElementsByTagName('td');
+                const matchesFilter = [
+                    (!filterOperationId || cells[0].innerText.toLowerCase().includes(filterValue)),
+                    (!filterOperationType || cells[1].innerText.toLowerCase().includes(filterValue)),
+                    (!filterCategory || cells[2].innerText.toLowerCase().includes(filterValue)),
+                    (!filterAmount || cells[3].innerText.toLowerCase().includes(filterValue)),
+                    (!filterCreatedAt || cells[5].innerText.toLowerCase().includes(filterValue)),
+                    (!filterUpdatedAt || cells[6].innerText.toLowerCase().includes(filterValue)),
+                    (!filterAmountSigned || cells[7].innerText.toLowerCase().includes(filterValue)),
+                    (!filterAmountCredit || cells[8].innerText.toLowerCase().includes(filterValue)),
+                    (!filterAmountDebit || cells[9].innerText.toLowerCase().includes(filterValue)),
+                ].every(Boolean);
+
+                row.style.display = matchesFilter ? '' : 'none';
+            });
+        }
+
+        // Open the filter modal
+        document.getElementById('filterButton').addEventListener('click', () => {
+            const filterModal = new bootstrap.Modal(document.getElementById('filterModal'));
+            filterModal.show();
+        });
+
+        // Apply filters when button is clicked
+        document.getElementById('applyFilterButton').addEventListener('click', () => {
+            applyFilters();
+            const filterModal = bootstrap.Modal.getInstance(document.getElementById('filterModal'));
+            filterModal.hide();
+        });
+    });
+</script>
+
+
+ 
+
+<!-- Add Font Awesome CSS -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+
+</div>
+
+                    <tr>
+                        <th  id="headerOperationId">Operation ID</th>
+                        <th id="headerOperationType">Operation Type</th>
+                        <th id="headerCategory">Category</th>
+                        <th id="headerAmount">Amount TND</th>
+                        <th id="headerActions">Actions</th>
+                        <th id="headerCreatedAt">Created At</th>
+                        <th id="headerUpdatedAt">Updated At</th>
+                        <th id="headerAmountSigned">Amount Signed</th>
+                        <th id="headerAmountCredit">Amount Credit</th>
+                        <th id="headerAmountDebit">Amount Debit</th>
+
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="operation : ${operations}">
+                        <td  id="dataOperationId" style="text-align: right;" th:text= "${operation.operationId}">ID</td>
+                        <td   id="dataOperationType" th:text="${operation.operationType == '+' ? 'Income' : (operation.operationType == '-' ? 'Expense' : operation.operationType)}">Type</td>
+
+                        <td   id="dataCategory" th:text="${operation.category == 1 ? 'Salary' : (operation.category == 2 ? 'Rent' : operation.category)}">Category</td>
+
+                        <td  id="dataAmount" style="text-align: right;" th:text="${operation.amount}">Amount</td>
+                        <td>
+<!-- Modify Operation Modal -->
+<div class="modal fade" id="modifyOperationModal" tabindex="-1" aria-labelledby="modifyOperationModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <!-- Icon for Modify Operation -->
+                <h5 class="modal-title" id="modifyOperationModalLabel">
+                    <i class="fas fa-edit"></i> Modify Operation
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <!-- Modify Operation Form -->
+                <form th:action="@{/wallet/modify/{id}(id=${operation.operationId})}" method="post">
+                    <!-- Hidden field to include the operation ID -->
+                    <input type="hidden" name="id" th:value="${operation.operationId}" />
+
+                    <div class="mb-3">
+                        <label for="operationType" class="form-label">Operation Type:</label>
+                        <select id="operationType" name="operationType" class="form-select" required>
+                            <option value="+">Income</option>
+                            <option value="-">Expense</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="category" class="form-label">Category:</label>
+                        <select id="category" name="category" class="form-select" required>
+                            <option value="1">Salary</option>
+                            <option value="2">Rent</option>
+                            <!-- Add more categories as needed -->
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="amount" class="form-label">Amount:</label>
+                        <input type="number" step="0.01" id="amount" name="amount" class="form-control" required>
+                    </div>
+                    <button type="submit" class="btn btn-success">Save Changes</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<!-- Modify Button with Modal Trigger -->
+<form style="display:inline; margin-right: 10px; " >
+    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modifyOperationModal">
+        <i class="fas fa-edit"></i> 
+    </button>
+</form>
+
+<!-- Add Font Awesome CSS -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+<!-- Delete Button -->
+<form onclick="return confirm('Are you sure ?');"  th:action="@{/wallet/delete/{id}(id=${operation.operationId})}" method="post" style="display:inline;">
+    <button type="submit" class="btn btn-danger">
+        <i class="fas fa-trash-alt"></i> <!-- Icon for Delete -->
+    </button>
+</form>
+
+
+
+<!-- Add Font Awesome CSS -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+                        </td>
+                        <td id="dataCreatedAt" th:text="${operation.createdAt}"></td>
+                        <td id="dataUpdatedAt" th:text="${operation.updatedAt}"></td>
+                        <td  id="dataAmountSigned" th:text="${operation.amountSigned}"></td>
+                        <td   id="dataAmountCredit" th:text="${operation.amountCredit}"></td>
+                        <td  id="dataAmountDebit" th:text="${operation.amountDebit}"></td>
+
+                        
+                    </tr>
+                </tbody>
+            </table>
+           
+
+        </section>
+    </main>
+<!-- Income Modal -->
+<div class="modal fade" id="incomeModal" tabindex="-1" aria-labelledby="incomeModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="incomeModalLabel">
+                    <i class="fas fa-coins"></i> Add Income
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <!-- Income Form -->
+                <form th:action="@{/wallet/create}" method="post">
+                    <input type="hidden" name="operationType" value="+">
+                    <div class="mb-3">
+                        <label for="incomeCategory" class="form-label">Category:</label>
+                        <select id="incomeCategory" name="category" class="form-select" required>
+                            <option value="1">Salary</option>
+                            <option value="2">Bonus</option>
+                            <!-- Add more income categories as needed -->
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="incomeAmount" class="form-label">Amount:</label>
+                        <input type="number" step="0.01" id="incomeAmount" name="amount" class="form-control" required>
+                    </div>
+                    <button type="submit" class="btn btn-success">Save Income</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Expense Modal -->
+<div class="modal fade" id="expenseModal" tabindex="-1" aria-labelledby="expenseModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="expenseModalLabel">
+                    <i class="fas fa-shopping-cart"></i> Add Expense
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <!-- Expense Form -->
+                <form th:action="@{/wallet/create}" method="post">
+                    <input type="hidden" name="operationType" value="-">
+                    <div class="mb-3">
+                        <label for="expenseCategory" class="form-label">Category:</label>
+                        <select id="expenseCategory" name="category" class="form-select" required>
+                            <option value="1">Rent</option>
+                            <option value="2">Utilities</option>
+                            <!-- Add more expense categories as needed -->
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="expenseAmount" class="form-label">Amount:</label>
+                        <input type="number" step="0.01" id="expenseAmount" name="amount" class="form-control" required>
+                    </div>
+                    <button type="submit" class="btn btn-danger">Save Expense</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Add Font Awesome CSS -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+<!-- Add Bootstrap CSS and JS for modal functionality -->
+<link href="https://maxcdn.bootstrapcdn.com/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/5.3.0/js/bootstrap.min.js"></script>
+
+
+     
+   
+</body>
+</html>
+

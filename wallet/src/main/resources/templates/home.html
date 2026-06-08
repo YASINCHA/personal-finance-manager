@@ -1,0 +1,92 @@
+<!DOCTYPE html >
+<html>
+
+<head>
+ <meta charset="UTF-8">
+ <title>Home Page</title>
+ <style>
+  body {
+   background-color: #f5f5f5;
+   margin: 0;
+   padding: 0;
+  }
+
+  .dashboard {
+   background-color: #18053b;
+   color: #fff;
+   padding: 40px;
+   text-align: center;
+  }
+
+  .dashboard_title {
+   font-size: 24px;
+   margin-top: 0;
+  }
+
+  .dashboard_user {
+   margin-top: 20px;
+  }
+
+  .dashboard_user_name {
+   font-size: 18px;
+   color: #c299d0;
+  }
+
+  .span-text {
+   text-align: right;
+   color: black;
+  }
+ </style>
+</head>
+
+<body>
+ <div class="dashboard">
+  <h1 class="dashboard_title"   style="font-family: 'Arial', sans-serif; font-size: 36px; font-weight: bold; 
+  color: #ffffff; text-align: center; margin: 20px 0; 
+  text-transform: uppercase; border-bottom: 4px solid #000; padding-bottom: 10px;">Welcome to MyWallet </h1>
+
+
+
+  <div class="dashboard_user" style="display: flex; align-items: center; justify-content: center; padding: 20px; 
+  background-color: #f9f9f9; border-radius: 8px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); 
+  max-width: 300px; margin: auto;">
+   <h2 th:text="${userdetail.username}" class="dashboard_user_name"   style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-size: 24px; 
+                   font-weight: 600; color: #333; text-align: center; margin: 0; padding: 10px;"></h2>
+  </div>
+
+
+  <div class="span-text">
+   <span sec:authorize="isAuthenticated" style="color: white;"><a th:href="@{/wallet/login}">Logout</a></span>
+  </div>
+
+
+  <h2>Get Started !</h2>
+  <a th:href="@{/wallet/operations}" class="big-link"  style="display: inline-block; padding: 12px 20px; color: #fff; background-color: #1f2937; 
+  text-decoration: none; font-size: 16px; font-weight: bold; border: 2px solid #000; 
+  border-radius: 5px; transition: background-color 0.3s, transform 0.2s;" 
+onmouseover="this.style.backgroundColor='#374151'; this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 6px rgba(0, 0, 0, 0.2)';" 
+onmouseout="this.style.backgroundColor='#1f2937'; this.style.transform='translateY(0)'; this.style.boxShadow='none';">Go to Operations</a> </div>
+   
+ 
+
+</body>
+<style>
+
+.big-link {
+    display: inline-block;
+    padding: 15px 30px; /* Adjust padding as needed */
+    font-size: 24px; /* Adjust font size as needed */
+    color: #ffffff; /* White text color */
+    background-color:#8d8d8d; /* Blue background color for contrast */
+    text-decoration: none; /* Remove underline */
+    border-radius: 5px; /* Rounded corners */
+    text-align: center; /* Center text */
+}
+
+.big-link:hover {
+    background-color: #010204; /* Darker blue on hover */
+    color: #ffffff; /* Ensure text color remains white on hover */
+}
+
+</style>
+</html>
